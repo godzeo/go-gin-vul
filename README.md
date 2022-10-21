@@ -1,4 +1,4 @@
-# Go Gin vul Example 
+# Go Gin vulnerability Example 
 
 An example of gin contains many useful vul
 
