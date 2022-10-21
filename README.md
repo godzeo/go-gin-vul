@@ -2,15 +2,23 @@
 
 An example of gin contains many useful vul
 
+一个go写的WEB漏洞靶场，实际自己写一下，加固一下知识
+GIN框架 整个web框架是go-gin-Example 上面改的
+
+
+
 
 
 #0x01 sqlli
 
+实际中最常见的一种编码问题 Order by 之后存在列和表的的时候，一般采用拼接的情况出现sql注入
+
 由于表/列名无法使用参数化查询，所以推荐使用白名单或转义操作
 ````
 db.Order(xxxx).First(&user)
-
-// 对于列名的修复
+````
+// 对于列名的修复，稳妥的是白名单
+````
 validCols := map[string]bool{"col1": true, "col2":true}
 
 if _, ok := validCols[xxxx]; !ok {
