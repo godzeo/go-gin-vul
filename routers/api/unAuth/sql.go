@@ -1,9 +1,9 @@
 package unAuth
 
 import (
-	"github.com/EDDYCJY/go-gin-example/service/safe_service"
-	"github.com/EDDYCJY/go-gin-example/service/vul_service"
 	"github.com/gin-gonic/gin"
+	"github.com/godzeo/go-gin-vul/service/safe_service"
+	"github.com/godzeo/go-gin-vul/service/vul_service"
 )
 
 func Sqlli(c *gin.Context) {

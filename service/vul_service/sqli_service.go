@@ -1,6 +1,6 @@
 package vul_service
 
-import "github.com/EDDYCJY/go-gin-example/models"
+import "github.com/godzeo/go-gin-vul/models"
 
 type LogData struct {
 	Username string

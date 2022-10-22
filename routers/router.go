@@ -1,21 +1,20 @@
 package routers
 
 import (
-	"github.com/EDDYCJY/go-gin-example/routers/api/unAuth"
+	"github.com/godzeo/go-gin-vul/routers/api/unAuth"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/EDDYCJY/go-gin-example/docs"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
-	"github.com/EDDYCJY/go-gin-example/middleware/jwt"
-	"github.com/EDDYCJY/go-gin-example/pkg/export"
-	"github.com/EDDYCJY/go-gin-example/pkg/qrcode"
-	"github.com/EDDYCJY/go-gin-example/pkg/upload"
-	"github.com/EDDYCJY/go-gin-example/routers/api"
-	"github.com/EDDYCJY/go-gin-example/routers/api/v1"
+	"github.com/godzeo/go-gin-vul/middleware/jwt"
+	"github.com/godzeo/go-gin-vul/pkg/export"
+	"github.com/godzeo/go-gin-vul/pkg/qrcode"
+	"github.com/godzeo/go-gin-vul/pkg/upload"
+	"github.com/godzeo/go-gin-vul/routers/api"
+	"github.com/godzeo/go-gin-vul/routers/api/v1"
 )
 
 // InitRouter initialize routing information
@@ -33,9 +32,18 @@ func InitRouter() *gin.Engine {
 	r.POST("/upload", api.UploadImage)
 
 	// 未授权的漏洞
-	// slq注入
-	r.POST("/sql/login", unAuth.Sqlli)
-	r.POST("/sql/loginSafe", unAuth.SqlliSafe)
+	apivul := r.Group("/api/vul")
+	{
+		apivul.POST("/sql/login", unAuth.Sqlli)
+		apivul.POST("cmd1", unAuth.CMD1)
+		apivul.POST("cmd2", unAuth.CMD2)
+	}
+
+	// 安全修复后
+	apisafe := r.Group("/api/safe")
+	{
+		apisafe.POST("/sql/login", unAuth.SqlliSafe)
+	}
 
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())

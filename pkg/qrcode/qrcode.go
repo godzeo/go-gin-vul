@@ -6,9 +6,9 @@ import (
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
 
-	"github.com/EDDYCJY/go-gin-example/pkg/file"
-	"github.com/EDDYCJY/go-gin-example/pkg/setting"
-	"github.com/EDDYCJY/go-gin-example/pkg/util"
+	"github.com/godzeo/go-gin-vul/pkg/file"
+	"github.com/godzeo/go-gin-vul/pkg/setting"
+	"github.com/godzeo/go-gin-vul/pkg/util"
 )
 
 type QrCode struct {
