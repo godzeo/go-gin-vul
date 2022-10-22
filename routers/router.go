@@ -37,12 +37,14 @@ func InitRouter() *gin.Engine {
 		apivul.POST("/sql/login", unAuth.Sqlli)
 		apivul.POST("cmd1", unAuth.CMD1)
 		apivul.POST("cmd2", unAuth.CMD2)
+		apivul.POST("ssrf", unAuth.GetImage)
 	}
 
 	// 安全修复后
 	apisafe := r.Group("/api/safe")
 	{
 		apisafe.POST("/sql/login", unAuth.SqlliSafe)
+		apisafe.POST("ssrf", unAuth.GetImageSafe)
 	}
 
 	apiv1 := r.Group("/api/v1")
