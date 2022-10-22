@@ -172,10 +172,12 @@ Content-Length: 64
 
 
 ## 0x03 SSRF
-When using some methods under net/http , if the variable value is externally controllable (referring to dynamically obtained from the parameter), the request url should be strictly checked for security. And The url parameter had better be like https://test.com/?q={userInput} , please avoid requesting the user input directly.
-A successful SSRF attack can often result in unauthorised actions or access to data within the organization, either in the vulnerable application itself or on other back-end systems that the application can communicate with. In some situations, the SSRF vulnerability might allow an attacker to perform arbitrary command execution.
 
-成功的SSRF攻击通常会导致组织内未经授权的操作或对数据的访问，无论是在易受攻击的应用程序本身中还是在应用程序可以与之通信的其他后端系统中。在某些情况下，SSRF漏洞可能允许攻击者执行任意命令执行。
+SSRF攻击通常会导致组织内未经授权的操作或对数据的访问，
+在某些情况下，SSRF漏洞可能允许攻击者执行任意命令执行。
+
+<details>
+  <summary>折叠代码和发包</summary>
 
 常见函数
 ```go
@@ -255,7 +257,4 @@ get image failed
 当然这个修复过于简单了，后面看一下成熟的修复方案
 
 
-
-<details>
-  <summary>折叠代码和发包</summary>
 </details>
