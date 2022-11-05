@@ -11,11 +11,70 @@ GIN框架 整个web框架是go-gin-Example 上面改的，没有前端框架，�
 
 # 0x0 Vulnerability code analysis and fix 漏洞代码解析和修复
 
+run
+```
+go mod tidy
+go run main.go
+```
+conf/app.ini 
+```
+[database]
+Type = mysql
+User = root
+Password = 123456
+Host = 127.0.0.1:3066
+Name = blog
+TablePrefix = blog_
+
+[redis]
+Host = 127.0.0.1:6379
+Password =
+MaxIdle = 30
+MaxActive = 30
+IdleTimeout = 200
+```
+
+
 ## 0x01 sqli
 
 实际中最常见的一种编码问题 Order by 之后存在列和表的的时候，一般采用拼接的情况出现sql注入
 
 由于表/列名无法使用参数化查询，所以推荐使用白名单或转义操作
+
+
+
+### 0x011 常见错误拼接
+
+主要是运用 fmt.Sprintf()、buffer.WriteString()等方式将字符串连接到一起。
+
+简单就是先拼接，后查询都有问题
+
+```
+db.Select(xxx).First(&user) 
+
+db.Where(fmt.Sprintf("name = '%s'", xxx)).Find(&user) 
+
+db.Raw("select name from " + xxx).First(&user) 
+
+db.Exec("select name from " + xxx).First(&user) 
+```
+
+### 0x012 业务中常见一定要拼接的地方
+
+对于开发者来讲，SQL注入的修复主要有两种场景：
+
+1. 常规value的拼接;
+2. 表/列名的拼接。
+
+原因可以看之前的文章，简单来说就是如果预编译会导致列名失效
+
+
+
+实际中最常见的一种编码问题 Order by 之后存在列和表的的时候，一般采用拼接的情况出现sql注入
+
+由于表/列名无法使用参数化查询，所以推荐使用白名单或转义操作
+
+下面展开有代码
 <details>
   <summary>折叠代码和发包</summary>
 
@@ -256,5 +315,427 @@ get image failed
 ```
 当然这个修复过于简单了，后面看一下成熟的修复方案
 
+
+</details>
+
+
+
+
+
+
+
+
+# 0x04 File Operation 文件操作
+
+## 0x041 path traversing 路径穿越
+
+在执行文件操作时，如果对从外部传入的文件名没有限制，则可能导致任意文件读取或任意文件写入，这可能严重导致代码执行。
+
+
+
+### 0x0411 arbitrary file read 任意文件读
+
+<details>
+  <summary>折叠代码和发包</summary>
+
+
+routers/api/unAuth/path.go
+
+```go
+func FileRead(c *gin.Context) {
+	path := c.Query("filename")
+
+	// Unfiltered file paths
+	data, _ := ioutil.ReadFile(path)
+
+	c.JSON(200, gin.H{
+		"success": "read: " + string(data),
+	})
+
+}
+
+func Dirfile(c *gin.Context) {
+	path := c.Query("filename")
+	data, _ := ioutil.ReadFile(filepath.Join("/Users/zy", path))
+
+	c.JSON(200, gin.H{
+		"success": "read: " + string(data),
+	})
+
+}
+```
+
+
+
+```
+GET /api/vul/read?filename=/../../../../../../../../../../etc/passwd HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+GET /api/vul/dir?filename=/../../etc/passwd HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+```
+
+
+
+
+
+### 0x0412 arbitrary file write 任意文件写
+
+routers/api/unAuth/path.go
+
+```go
+func Unzip(c *gin.Context) {
+	path := c.Query("filename")
+	text := c.Query("text")
+	file_path := filepath.Join("/Users/zy/", path)
+	r, _ := zip.OpenReader(file_path)
+
+	var abspath string
+	for _, f := range r.File {
+		abspath, _ = filepath.Abs(f.Name)
+		ioutil.WriteFile(abspath, []byte(text), 0640)
+	}
+
+	data, _ := ioutil.ReadFile(abspath)
+
+	c.JSON(200, gin.H{
+		"success": "read: " + string(data),
+	})
+}
+```
+
+
+
+```raw
+GET /api/vul/unzip?filename=radconfig.zip&text=Zeo666 HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+```
+
+
+
+### 0x0413 arbitrary file remove 任意文件删除
+
+```go
+//arbitrary file remove
+func Fileremove(c *gin.Context) {
+ 	path := c.Query("path")
+	os.Remove(path)
+}
+```
+
+
+
+### 0x0414 FIX 修复
+
+routers/api/unAuth/path.go
+
+过滤 `..`
+
+```go
+func Unzipsafe(c *gin.Context) {
+	path := c.Query("filename")
+	file_path := filepath.Join("/Users/zy/", path)
+	r, err := zip.OpenReader(file_path)
+	if err != nil {
+		fmt.Println("read zip file fail")
+		c.JSON(500, gin.H{
+			"success": "err: " + err.Error(),
+		})
+	}
+	for _, f := range r.File {
+		if !strings.Contains(f.Name, "..") {
+			p, _ := filepath.Abs(f.Name)
+			ioutil.WriteFile(p, []byte("present"), 0640)
+		} else {
+			c.JSON(500, gin.H{
+				"success": "err: " + err.Error(),
+			})
+		}
+	}
+	c.JSON(200, gin.H{
+		"success": "OK",
+	})
+}
+```
+
+
+
+```
+GET /api/safe/unzip?filename=../../radconfig.zip&text=Zeo666 HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json; charset=utf-8
+Date: Sat, 05 Nov 2022 08:04:40 GMT
+Content-Length: 65
+Connection: close
+
+{"success":"err: open /radconfig.zip: no such file or directory"}
+
+```
+
+</details>
+
+
+## 0x042 File access permissions 文件权限
+
+根据创建文件的敏感度设置不同级别的访问权限，以防止具有任意权限的用户读取敏感数据。例如，将文件权限设置为: -rw-r -----
+
+<details>
+  <summary>折叠代码和发包</summary>
+
+```go
+ioutil.WriteFile(p, []byte("present"), 0640)
+```
+
+
+
+```
+-rw------- (600)    只有拥有者有读写权限。
+-rw------- (640)    只有拥有者和属组用户有读写权限。
+-rw-r--r-- (644)    只有拥有者有读写权限；而属组用户和其他用户只有读权限。
+-rwx------ (700)    只有拥有者有读、写、执行权限。
+-rwxr-xr-x (755)    拥有者有读、写、执行权限；而属组用户和其他用户只有读、执行权限。
+-rwx--x--x (711)    拥有者有读、写、执行权限；而属组用户和其他用户只有执行权限。
+-rw-rw-rw- (666)    所有用户都有文件读、写权限。
+-rwxrwxrwx (777)    所有用户都有读、写、执行权限。
+```
+
+
+</details>
+ 
+
+
+0x05 Open Redirect 重定向
+
+
+不要直接重定向到用户可控制的地址。
+
+
+
+<details>
+  <summary>折叠代码和发包</summary>
+
+```go
+func redirect(c *gin.Context) {
+    loc := c.Query("redirect")
+    c.Redirect(302, loc)
+}
+```
+
+
+
+```
+GET /api/vul/redirect?redirect=https://www.qq.com HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+```
+
+
+
+### 0x42 FIX 修复
+
+```go
+func SafeRedirect(c *gin.Context) {
+	baseUrl := "https://baidu.com/path?q="
+	loc := c.Query("redirect")
+	c.Redirect(302, baseUrl+loc)
+}
+```
+
+```
+GET /api/safe/redirect?redirect=https://www.qq.com HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+
+```
+</details>
+
+
+
+# 0x05 CORS
+
+CORS请求保护不当会导致敏感信息泄露，因此应严格设置Access-Control-Allow-Origin以使用同源策略进行保护。
+
+任意源
+
+<details>
+  <summary>折叠代码和发包</summary>
+```go
+func Cors1(c *gin.Context) {
+
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
+}
+
+```
+
+```
+GET /api/vul/cors1 HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+Access-Control-Allow-Origin: *
+Date: Sat, 05 Nov 2022 09:05:18 GMT
+Content-Length: 0
+Connection: close
+
+
+```
+
+任意添加源
+
+```go
+func Cors2(c *gin.Context) {
+
+	origin := c.Request.Header.Get("Origin")
+	c.Header("Access-Control-Allow-Origin", origin)
+	c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
+}
+```
+
+```
+GET /api/vul/cors2 HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Origin: zeo.cool
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+Access-Control-Allow-Origin: zeo.cool
+Date: Sat, 05 Nov 2022 09:06:33 GMT
+Content-Length: 0
+Connection: close
+
+```
+
+
+
+### FIX 修复
+
+直接白名单
+
+code:
+
+```go
+func corsDemo2(c *gin.Context) {
+    allowedOrigin := "https://test.com"
+ 
+    c.Header("Access-Control-Allow-Origin", allowedOrigin)
+    c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+}
+```
+
+
+
+```
+GET /api/safe/cors HTTP/1.1
+Host: 127.0.0.1:8000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0) Gecko/20100101 Firefox/103.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Origin: zeo.cool
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE
+Access-Control-Allow-Origin: https://test.com
+Date: Sat, 05 Nov 2022 09:09:53 GMT
+Content-Length: 0
+Connection: close
+```
 
 </details>

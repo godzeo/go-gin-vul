@@ -38,6 +38,12 @@ func InitRouter() *gin.Engine {
 		apivul.POST("cmd1", unAuth.CMD1)
 		apivul.POST("cmd2", unAuth.CMD2)
 		apivul.POST("ssrf", unAuth.GetImage)
+		apivul.GET("read", unAuth.FileRead)
+		apivul.GET("dir", unAuth.Dirfile)
+		apivul.GET("unzip", unAuth.Unzip)
+		apivul.GET("redirect", unAuth.Redirect)
+		apivul.GET("cors1", unAuth.Cors1)
+		apivul.GET("cors2", unAuth.Cors2)
 	}
 
 	// 安全修复后
@@ -45,6 +51,9 @@ func InitRouter() *gin.Engine {
 	{
 		apisafe.POST("/sql/login", unAuth.SqlliSafe)
 		apisafe.POST("ssrf", unAuth.GetImageSafe)
+		apisafe.GET("unzip", unAuth.Unzipsafe)
+		apisafe.GET("redirect", unAuth.SafeRedirect)
+		apisafe.GET("cors", unAuth.Corssafe)
 	}
 
 	apiv1 := r.Group("/api/v1")
