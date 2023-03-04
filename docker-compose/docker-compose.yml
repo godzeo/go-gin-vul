@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_net
+
+  redis:
+    image: redis:latest
+    restart: always
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_net
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DATABASE_URL: "root:my-secret-pw@tcp(mysql:3306)/blog?charset=utf8&parseTime=True&loc=Local"
+    networks:
+      - app_net
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  app_net:

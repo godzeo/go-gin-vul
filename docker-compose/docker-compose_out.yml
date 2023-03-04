@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+
+  app:
+    image: my-app
+    container_name: my-app
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./conf:/app/conf
+    environment:
+      MYSQL_HOST: mysql:3306
+      REDIS_HOST: redis:6379
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./conf/blog.sql:/docker-entrypoint-initdb.d/blog.sql
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
