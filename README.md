@@ -1,4 +1,4 @@
-# Go Gin vulnerability Example 
+# Go Gin vulnerability Range 
 
 An example of gin contains many useful vul
 
@@ -13,8 +13,9 @@ GIN框架 整个web框架是go-gin-Example 上面改的，没有前端框架，�
 后期有时间再加前端吧，对于安全工程师前端是真的烦。
 
 
-# 0x00 How to Code Run 代码运行
+# 0x00 How to Code Run 安装部署🚀
 
+## 0x01 docker 一键启动
 首先刚刚加入了docker 可以一键启动，自行安装docker 和 docker-compose
 
 ```
@@ -24,10 +25,10 @@ docker-compose up -d
 ```
 访问 http://127.0.0.1:8080/  
 
-漏洞接口就参考doc
+漏洞接口就参考doc https://github.com/godzeo/go-gin-vul/blob/main/doc/vul.md
 
 
-如果自行搭建
+## 0x02 手动搭建
 1 需要准备mysql和redis
 
 2 修改配置conf/app.ini
@@ -56,4 +57,6 @@ go mod tidy
 go run main.go
 ```
 
-
+# 漏洞文档
+漏洞接口和代码分析在
+https://github.com/godzeo/go-gin-vul/blob/main/doc/vul.md
