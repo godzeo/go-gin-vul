@@ -8,8 +8,11 @@ import (
 
 func Sqlli(c *gin.Context) {
 
-	User := c.PostForm("user")
+	User := c.PostForm("username")
 	Password := c.PostForm("password")
+	//User := "test"
+
+	println("Password=" + Password)
 
 	// 自动创建一个表结构
 	//var db *gorm.DB

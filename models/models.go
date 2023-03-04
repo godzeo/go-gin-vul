@@ -19,6 +19,16 @@ type Model struct {
 	ModifiedOn int `json:"modified_on"`
 	DeletedOn  int `json:"deleted_on"`
 }
+type Logindata struct {
+	ID       uint   `gorm:"primary_key"`
+	User     string `form:"user" json:"user" xml:"user"  binding:"required,userValidation"`
+	Password string `form:"password" json:"password" xml:"password" binding:"required"`
+}
+
+type Sqliuserdata struct {
+	Logindata Logindata
+	RawSQL    string
+}
 
 // Setup initializes the database instance
 func Setup() {

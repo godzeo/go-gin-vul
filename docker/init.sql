@@ -9,6 +9,8 @@ File Encoding         : 65001
 
 Date: 2018-03-18 16:52:35
 */
+CREATE DATABASE IF NOT EXISTS blog DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE blog;
 
 SET FOREIGN_KEY_CHECKS=0;
 

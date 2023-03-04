@@ -2,9 +2,8 @@ package util
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/unknwon/com"
-
 	"github.com/godzeo/go-gin-vul/pkg/setting"
+	"github.com/unknwon/com"
 )
 
 // GetPage get page parameters

@@ -1,20 +1,16 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"log"
 )
-
-type Login struct {
-	ID       uint   `gorm:"primary_key"`
-	User     string `form:"user" json:"user" xml:"user"  binding:"required,userValidation"`
-	Password string `form:"password" json:"password" xml:"password" binding:"required"`
-}
 
 func Slqlimode(username, password string) (bool, error) {
 
 	// 增
-	var data = Login{User: username, Password: password}
+	//var data = Login{User: username, Password: password}
 	//err2 := db.Create(&data)
 
 	//正常情况
@@ -31,23 +27,42 @@ func Slqlimode(username, password string) (bool, error) {
 	//err := db.Raw("select User from blog.blog_login where User ="+ username).First(&data).Error
 
 	// SELECT * FROM `blog`.`blog_login` ORDER BY `id` LIMIT 0,1000
-	err := db.Order(password).First(&data).Error
+	//err := db.Order(password).First(&data).Error
 
 	// user=user&password=123456 AND EXTRACTVALUE(9509,CONCAT(0x5c,(SELECT user from blog.blog_login LIMIT 0,1)))
+
+	// 建立数据库连接
+	db, err := sql.Open("mysql", "root:my-secret-pw@tcp(127.0.0.1:3306)/blog")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	// 构建SQL查询语句
+	sql := fmt.Sprintf("SELECT COUNT(*) FROM blog_auth WHERE username='%s' AND password='%s'", username, password)
+
+	// 执行SQL查询语句
+	var count int
+	err = db.QueryRow(sql).Scan(&count)
 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
 	}
 
-	if data.ID > 0 {
+	//if data.ID > 0 {
+	//	return true, nil
+	//}
+	if count == 1 {
+		fmt.Print("Login succeeded")
 		return true, nil
+	} else {
+		fmt.Println("Login failed")
+		return false, nil
 	}
 
-	return false, nil
 }
 
 func Slqlisafemode(username, password string) (bool, error) {
-	var data = Login{User: username, Password: password}
+	var data = Logindata{User: username, Password: password}
 
 	// 对于表名
 	validCols := map[string]bool{"user": true, "password": true}
@@ -67,4 +82,30 @@ func Slqlisafemode(username, password string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func SlqliByIDmode(userID string) (Sqliuserdata, error) {
+
+	println("userID:" + userID)
+
+	//db.Where("user = ?", "some_user").Find(&Logindata{})
+
+	var qLogindata Logindata
+	rawSQL := fmt.Sprintf("SELECT * FROM blog_auth WHERE id = '%s'", userID)
+
+	if err := db.Raw(rawSQL).Scan(&qLogindata).Error; err != nil {
+		return Sqliuserdata{RawSQL: rawSQL}, err
+	}
+
+	sqliUserdata := Sqliuserdata{
+		Logindata: qLogindata,
+		RawSQL:    rawSQL,
+	}
+
+	if qLogindata.ID == 0 {
+		return sqliUserdata, fmt.Errorf("user not found")
+	}
+
+	return sqliUserdata, nil
+
 }
