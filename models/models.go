@@ -21,7 +21,7 @@ type Model struct {
 }
 type Logindata struct {
 	ID       uint   `gorm:"primary_key"`
-	User     string `form:"user" json:"user" xml:"user"  binding:"required,userValidation"`
+	Username string `form:"username" json:"username" xml:"username"  binding:"required,userValidation"`
 	Password string `form:"password" json:"password" xml:"password" binding:"required"`
 }
 

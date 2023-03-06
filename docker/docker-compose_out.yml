@@ -2,21 +2,6 @@ version: '3.8'
 
 services:
 
-  app:
-    image: my-app
-    container_name: my-app
-    restart: always
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./conf:/app/conf
-    environment:
-      MYSQL_HOST: mysql:3306
-      REDIS_HOST: redis:6379
-    depends_on:
-      - mysql
-      - redis
-
   mysql:
     image: mysql:latest
     container_name: mysql

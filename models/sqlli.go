@@ -62,7 +62,7 @@ func Slqlimode(username, password string) (bool, error) {
 }
 
 func Slqlisafemode(username, password string) (bool, error) {
-	var data = Logindata{User: username, Password: password}
+	var data = Logindata{Username: username, Password: password}
 
 	// 对于表名
 	validCols := map[string]bool{"user": true, "password": true}
