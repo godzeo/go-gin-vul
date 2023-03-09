@@ -1,3 +1,4 @@
+FROM --platform=linux/amd64 ubuntu:latest
 FROM golang:latest
 
 ENV GOPROXY https://goproxy.cn,direct
