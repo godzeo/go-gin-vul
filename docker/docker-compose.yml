@@ -23,7 +23,7 @@ services:
     container_name: go-gin-vul-redis
 
   app:
-    image: godzzzz/go-gin-vul:latest
+    image: godzzzz/go-gin-vul-repo:latest
     restart: always
     ports:
       - "8080:8080"
