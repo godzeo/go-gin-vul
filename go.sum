@@ -5,6 +5,8 @@ github.com/PuerkitoBio/purell v1.1.1-0.20180310210909-975f53781597 h1:8+pMa56PPV
 github.com/PuerkitoBio/purell v1.1.1-0.20180310210909-975f53781597/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 h1:d+Bc7a5rLufV/sSk/8dngufqelfh6jnri85riMAaF/M=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
+github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 h1:JYp7IbQjafoB+tBA3gMyHYHrpOtNuDiK/uB5uXxq5wM=
+github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/astaxie/beego v1.9.3-0.20171218111859-f16688817aa4 h1:dNIynF6ICiq1NghlpIBxljb2JbyC61/JqWB5A9cfUfo=
 github.com/astaxie/beego v1.9.3-0.20171218111859-f16688817aa4/go.mod h1:0R4++1tUqERR0WYFWdfkcrsyoVBCG4DgpDGokT3yb+U=
 github.com/boombuler/barcode v1.0.1-0.20180315051053-3c06908149f7 h1:s7NuEzhW8Z2v7X7lUwHMqXt8HKYYd5YwtEt0CCMff3Q=

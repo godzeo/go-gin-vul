@@ -3,7 +3,7 @@ package unAuth
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/godzeo/go-gin-vul/service/safe_service"
-	"github.com/godzeo/go-gin-vul/service/vul_service"
+	service "github.com/godzeo/go-gin-vul/service/vul_service"
 )
 
 func Sqlli(c *gin.Context) {
@@ -23,7 +23,7 @@ func Sqlli(c *gin.Context) {
 	//	setting.DatabaseSetting.Name))
 	//db.AutoMigrate(&Login{})
 
-	loginService := vul_service.LogData{Username: User, Password: Password}
+	loginService := service.LogData{Username: User, Password: Password}
 	isExist, err := loginService.LoginCheck()
 	if err != nil {
 		c.JSON(500, gin.H{

@@ -2,12 +2,11 @@ package routers
 
 import (
 	"github.com/godzeo/go-gin-vul/routers/api/unAuth"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	"github.com/godzeo/go-gin-vul/middleware/jwt"
 	"github.com/godzeo/go-gin-vul/pkg/export"
@@ -22,29 +21,33 @@ func InitRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	r.LoadHTMLGlob("templates/*")
 
 	r.StaticFS("/export", http.Dir(export.GetExcelFullPath()))
 	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 	r.StaticFS("/qrcode", http.Dir(qrcode.GetQrCodeFullPath()))
 
 	r.POST("/auth", api.GetAuth)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("swagger.json")))
 	r.POST("/upload", api.UploadImage)
 
 	// 未授权的漏洞
 	apivul := r.Group("/api/vul")
 	{
 		apivul.POST("/sql/login", unAuth.Sqlli)
-		apivul.POST("/sqli/byid", unAuth.SqlliById)
+		apivul.Any("/sqli/byid", unAuth.SqlliById)
 		apivul.POST("cmd1", unAuth.CMD1)
 		apivul.POST("cmd2", unAuth.CMD2)
 		apivul.POST("ssrf", unAuth.GetImage)
-		//apivul.GET("read", unAuth.FileRead)
-		//apivul.GET("dir", unAuth.Dirfile)
-		//apivul.GET("unzip", unAuth.Unzip)
+		apivul.GET("read", unAuth.FileRead)
+		apivul.GET("dir", unAuth.Dirfile)
+		apivul.GET("unzip", unAuth.Unzip)
 		apivul.GET("redirect", unAuth.Redirect)
 		apivul.GET("cors1", unAuth.Cors1)
 		apivul.GET("cors2", unAuth.Cors2)
+		apivul.Any("xss", unAuth.Xss)
+		apivul.Any("addcomments", unAuth.AddComment)
+		apivul.Any("getcomments", unAuth.GetComments)
 	}
 
 	// 安全修复后
@@ -52,7 +55,7 @@ func InitRouter() *gin.Engine {
 	{
 		apisafe.POST("/sql/login", unAuth.SqlliSafe)
 		apisafe.POST("ssrf", unAuth.GetImageSafe)
-		//apisafe.GET("unzip", unAuth.Unzipsafe)
+		apisafe.GET("unzip", unAuth.Unzipsafe)
 		apisafe.GET("redirect", unAuth.SafeRedirect)
 		apisafe.GET("cors", unAuth.Corssafe)
 	}

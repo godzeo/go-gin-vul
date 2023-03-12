@@ -1,6 +1,8 @@
 # Go Gin vulnerability Range 
 
-An example of gin contains many useful vul
+# 0x00 Introduction
+
+Web application build Golang with Vulnerability
 
 一个go写的WEB漏洞靶场，实际自己写一下，加固一下知识，也偶尔测试waf的时候，用一下自己的靶场
 
@@ -13,9 +15,29 @@ GIN框架 整个web框架是go-gin-Example 上面改的，没有前端框架，�
 后期有时间再加前端吧，对于安全工程师前端是真的烦。
 
 
-# 0x00 How to Code Run 安装部署🚀
 
-## 0x01 docker 一键启动
+
+# 0x01 vulnerability
+
+```
+sql inject
+Command Injection
+Reflex xss
+Store xss
+cors
+redirect
+fileread
+unzip
+dirfile
+
+JWT
+CBC bit flipping attack（todo）
+
+```
+
+# 0x02 How to Code Run 安装部署🚀
+
+## 0x02 docker 一键启动
 首先刚刚加入了docker 可以一键启动，自行安装docker 和 docker-compose
 
 ```
@@ -28,7 +50,7 @@ docker-compose up -d
 漏洞接口就参考doc https://github.com/godzeo/go-gin-vul/blob/main/doc/vul.md
 
 
-## 0x02 手动搭建
+## 0x03手动搭建
 1 需要准备mysql和redis
 
 2 修改配置conf/app.ini

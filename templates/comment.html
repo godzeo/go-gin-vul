@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Comments</title>
+</head>
+<body>
+
+<header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+</header>
+<form method="POST" action="/api/vul/addcomments">
+    <p>
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+    </p>
+    <p>
+        <label for="content">Comment:</label>
+        <textarea name="content" id="content" required></textarea>
+    </p>
+    <p>
+        <button type="submit">Add Comment</button>
+    </p>
+</form>
+<main>
+    {{ template "content" . }}
+</main>
+<footer>
+    &copy; {{ .Year }} Zeo vul Website
+</footer>
+
+</body>
+</html>
+
+{{ define "content" }}
+{{ template "comment" . }}
+{{ end }}
+
+{{ define "comment" }}
+<h1>Comments</h1>
+<table>
+    <tr style="border: 1px solid black; padding: 5px;">
+        <th style="border: 1px solid black; padding: 5px;">Username (HTML Entities)</th>
+        <th style="border: 1px solid black; padding: 5px;">Comment</th>
+    </tr>
+    {{ range .Comments }}
+    <tr style="border: 1px solid black; padding: 5px;">
+        <td style="border: 1px solid black; padding: 5px;">{{ .Username }}</td>
+        <td style="border: 1px solid black; padding: 5px;">{{ .Content }}</td>
+    </tr>
+    {{ end }}
+</table>
+
+
+{{ end }}

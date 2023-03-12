@@ -7,6 +7,10 @@ github.com/PuerkitoBio/purell
 # github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578
 ## explicit
 github.com/PuerkitoBio/urlesc
+# github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+## explicit
+github.com/alecthomas/template
+github.com/alecthomas/template/parse
 # github.com/astaxie/beego v1.9.3-0.20171218111859-f16688817aa4
 ## explicit
 github.com/astaxie/beego/validation

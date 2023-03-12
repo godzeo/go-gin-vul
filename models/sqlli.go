@@ -1,10 +1,8 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"log"
 )
 
 func Slqlimode(username, password string) (bool, error) {
@@ -32,21 +30,23 @@ func Slqlimode(username, password string) (bool, error) {
 	// user=user&password=123456 AND EXTRACTVALUE(9509,CONCAT(0x5c,(SELECT user from blog.blog_login LIMIT 0,1)))
 
 	// 建立数据库连接
-	db, err := sql.Open("mysql", "root:my-secret-pw@tcp(127.0.0.1:3306)/blog")
-	if err != nil {
-		log.Fatal(err)
-	}
+	//db, err := sql.Open("mysql", "root:my-secret-pw@tcp(mysql:3306)/blog")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 	defer db.Close()
 	// 构建SQL查询语句
 	sql := fmt.Sprintf("SELECT COUNT(*) FROM blog_auth WHERE username='%s' AND password='%s'", username, password)
 
 	// 执行SQL查询语句
 	var count int
-	err = db.QueryRow(sql).Scan(&count)
 
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
-	}
+	//err = db.QueryRow(sql).Scan(&count)
+	db.Raw(sql).Scan(&count)
+
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return false, err
+	//}
 
 	//if data.ID > 0 {
 	//	return true, nil
