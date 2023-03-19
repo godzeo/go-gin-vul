@@ -3,7 +3,13 @@ package unAuth
 import "github.com/gin-gonic/gin"
 
 func Redirect(c *gin.Context) {
-	loc := c.Query("redirect")
+	var loc string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		loc = c.Query("redirect")
+	} else if c.Request.Method == "POST" {
+		loc = c.PostForm("redirect")
+	}
 	c.Redirect(302, loc)
 }
 

@@ -11,8 +11,15 @@ import (
 )
 
 func FileRead(c *gin.Context) {
-	path := c.Query("filename")
 
+	var path string
+
+	// Check the request method
+	if c.Request.Method == "GET" {
+		path = c.Query("filename")
+	} else if c.Request.Method == "POST" {
+		path = c.PostForm("filename")
+	}
 	// Unfiltered file paths
 	data, _ := ioutil.ReadFile(path)
 
@@ -22,19 +29,49 @@ func FileRead(c *gin.Context) {
 
 }
 
-func Dirfile(c *gin.Context) {
-	path := c.Query("filename")
-	data, _ := ioutil.ReadFile(filepath.Join("/usr", path))
+func DirFile(c *gin.Context) {
+
+	var dir string
+
+	// Check the request method
+	if c.Request.Method == "GET" {
+		dir = c.Query("filename")
+	} else if c.Request.Method == "POST" {
+		dir = c.PostForm("filename")
+	}
+
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "invalid directory",
+		})
+		return
+	}
+
+	var fileNames []string
+	for _, file := range files {
+		if file.IsDir() {
+			fileNames = append(fileNames, file.Name()+"/")
+		} else {
+			fileNames = append(fileNames, file.Name())
+		}
+	}
 
 	c.JSON(200, gin.H{
-		"success": "read: " + string(data),
+		"files": fileNames,
 	})
-
 }
 
 // arbitrary file remove
 func Fileremove(c *gin.Context) {
-	path := c.Query("path")
+	var path string
+
+	// Check the request method
+	if c.Request.Method == "GET" {
+		path = c.Query("filename")
+	} else if c.Request.Method == "POST" {
+		path = c.PostForm("filename")
+	}
 	os.Remove(path)
 }
 
@@ -42,9 +79,20 @@ var content = ""
 
 // bad: arbitrary file write
 func Unzip(c *gin.Context) {
-	path := c.Query("filename")
-	text := c.Query("text")
-	file_path := filepath.Join("/Users/zy/", path)
+
+	var path string
+	var text string
+
+	// Check the request method
+	if c.Request.Method == "GET" {
+		path = c.Query("filename")
+		text = c.Query("text")
+	} else if c.Request.Method == "POST" {
+		path = c.PostForm("filename")
+		text = c.PostForm("text")
+	}
+
+	file_path := filepath.Join("/bin/", path)
 	r, _ := zip.OpenReader(file_path)
 
 	var abspath string
@@ -62,8 +110,16 @@ func Unzip(c *gin.Context) {
 
 // safe fix
 func Unzipsafe(c *gin.Context) {
-	path := c.Query("filename")
-	file_path := filepath.Join("/Users/zy/", path)
+	var path string
+
+	// Check the request method
+	if c.Request.Method == "GET" {
+		path = c.Query("filename")
+	} else if c.Request.Method == "POST" {
+		path = c.PostForm("filename")
+	}
+
+	file_path := filepath.Join("/bin/", path)
 	r, err := zip.OpenReader(file_path)
 	if err != nil {
 		fmt.Println("read zip file fail")

@@ -8,8 +8,17 @@ import (
 
 func Sqlli(c *gin.Context) {
 
-	User := c.PostForm("username")
-	Password := c.PostForm("password")
+	var User string
+	var Password string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		User = c.Query("username")
+		Password = c.Query("password")
+	} else if c.Request.Method == "POST" {
+		User = c.PostForm("username")
+		Password = c.PostForm("password")
+	}
+
 	//User := "test"
 
 	println("Password=" + Password)

@@ -7,7 +7,13 @@ import (
 
 func SqlliById(c *gin.Context) {
 
-	userID := c.PostForm("userid")
+	var userID string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		userID = c.Query("userid")
+	} else if c.Request.Method == "POST" {
+		userID = c.PostForm("userid")
+	}
 
 	println("userid=" + userID)
 

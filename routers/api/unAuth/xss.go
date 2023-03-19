@@ -12,7 +12,14 @@ import (
 )
 
 func Xss(c *gin.Context) {
-	name := c.Query("name")
+	var name string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		name = c.Query("name")
+	} else if c.Request.Method == "POST" {
+		name = c.PostForm("name")
+	}
+
 	html := fmt.Sprintf(`
 		<h1>Hello, %s!</h1>
 		<p>You entered the name: <strong>%s</strong></p>
@@ -47,8 +54,18 @@ func Xss(c *gin.Context) {
 
 // AddComment adds a new comment
 func SafeAddComment(c *gin.Context) {
-	username := c.PostForm("username")
-	content := c.PostForm("content")
+
+	var username string
+	var content string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		username = c.Query("username")
+		content = c.PostForm("content")
+	} else if c.Request.Method == "POST" {
+		username = c.PostForm("username")
+		content = c.PostForm("content")
+	}
+
 	err := service.AddComment(username, content)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

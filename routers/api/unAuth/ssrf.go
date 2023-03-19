@@ -10,10 +10,21 @@ import (
 
 // Bad case
 func GetImage(c *gin.Context) {
-	url := c.PostForm("q")
+
+	var url string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		url = c.Query("q")
+	} else if c.Request.Method == "POST" {
+		url = c.PostForm("q")
+	}
+
 	res, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(500, gin.H{
+			"err": err,
+		})
 		fmt.Println("get image failed")
 	}
 	body, err := ioutil.ReadAll(res.Body)
@@ -28,7 +39,15 @@ func GetImage(c *gin.Context) {
 }
 
 func GetImageSafe(c *gin.Context) {
-	q := c.PostForm("q")
+
+	var q string
+	// Check the request method
+	if c.Request.Method == "GET" {
+		q = c.Query("q")
+	} else if c.Request.Method == "POST" {
+		q = c.PostForm("q")
+	}
+
 	url := "https://test.image.com/path/?q="
 	res, err := http.Get(url + q)
 	if err != nil {

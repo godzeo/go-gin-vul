@@ -12,7 +12,7 @@ The vulnerability websit with Go/GIN , the actual write their own, to strengthen
 
 GIN框架 整个web框架是go-gin-Example 上面改的，没有前端框架，只有一个swagger，直接发包吧
 
-后期有时间再加前端吧，对于安全工程师前端是真的烦。
+后期有时间再加前端吧，对于安全工程师前端是......
 
 
 
@@ -34,6 +34,7 @@ JWT
 CBC bit flipping attack（todo）
 
 ```
+![img.png](doc/img/img.png)
 
 # 0x02 How to Code Run 安装部署🚀
 

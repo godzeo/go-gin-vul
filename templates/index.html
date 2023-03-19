@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Go Gin Vulnerability Demo</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        h2 {
+            font-size: 30px;
+        }
+        p {
+            font-size: 16px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+
+<h1>Go Gin Vulnerability Demo</h1>
+<h2>API Documentation</h2>
+<p>Click on the API name to view the API documentation.</p>
+<p>Click on the API URL to test the API.</p>
+<p>Project: <a href="https://github.com/godzeo/go-gin-vul">https://github.com/godzeo/go-gin-vul</a></p>
+<p>about: <a href="https://github.com/godzeo">https://github.com/godzeo</a></p>
+
+
+
+
+<table>
+    <thead>
+    <tr>
+        <th>API Name</th>
+        <th>API URL</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Swagger API Documentation</td>
+        <td><a href="/swagger/index.html">/swagger/index.html</a></td>
+    </tr>
+    <tr>
+        <td>SQL Injection - Login Form</td>
+        <td><a href="/api/vul/sql/login?username=123&pass=123">/api/vul/sql/login?username=123&pass=123</a></td>
+    </tr>
+    <tr>
+        <td>SQL Injection - Get User by ID</td>
+        <td><a href="/api/vul/sqli/byid?userid=1">/api/vul/sqli/byid?userid=1</a></td>
+    </tr>
+    <tr>
+        <td>Command Injection - Ping Command</td>
+        <td><a href="/api/vul/cmd1?ip=127.0.0.1">/api/vul/cmd1?ip=127.0.0.1</a></td>
+    </tr>
+    <tr>
+        <td>Command Injection - Netcat Command</td>
+        <td><a href="/api/vul/cmd2?domain=127.0.0.1">/api/vul/cmd2?ip=127.0.0.1</a></td>
+    </tr>
+    <tr>
+        <td>Reflected Cross-Site Scripting (Reflected XSS)</td>
+        <td><a href="/api/vul/xss">/api/vul/xss?name=123</a></td>
+    </tr>
+    <tr>
+        <td>Stored Cross-Site Scripting (Stored XSS)</td>
+        <td><a href="/api/vul/getcomments">/api/vul/getcomments</a></td>
+    </tr>
+    <tr>
+        <td>Server-side Request Forgery</td>
+        <td><a href="/api/vul/ssrf?q=baidu.com">/api/vul/ssrf?q=google.com</a></td>
+    </tr>
+    <tr>
+        <td>File Inclusion - Read File</td>
+        <td><a href="/api/vul/read?filename=/etc/passwd">/api/vul/read?filename=/etc/passwd</a></td>
+    </tr>
+    <tr>
+        <td>Directory Traversal - List Directory</td>
+        <td><a href="/api/vul/dir?filename=/etc/passwd">/api/vul/dir?filename=/etc/passwd</a></td>
+    </tr>
+    <tr>
+        <td>Zip Traversal - Extract File</td>
+        <td><a href="/api/vul/unzip">/api/vul/unzip?filename=11.php&text=222222</a></td>
+    </tr>
+    <tr>
+        <td>Open Redirect</td>
+        <td><a href="/api/vul/redirect">/api/vul/redirect?url=www.google.com</a></td>
+    </tr>
+    <tr>
+        <td>Cross-Origin Resource Sharing (CORS) - Unsafe</td>
+        <td><a href="/api/vul/cors1">/api/vul/cors1</a></td>
+    </tr>
+    <tr>
+        <td>Cross-Origin Resource Sharing (CORS) - Safe</td>
+        <td><a href="/api/vul/cors2">/api/vul/cors2</a></td>
+    </tr>
+    <tr>
+        <td>Add Comment</td>
+        <td><a href="/api/vul/addcomments">/api/vul/addcomments</a></td>
+    </tr>
+    <tr>
+        <td>SQL Injection - Login Form (Safe)</td>
+        <td><a href="/api/safe/sql/login">/api/safe/sql/login</a></td>
+    </tr>
+    <tr>
+        <td>Server-side Request Forgery (Safe)</td>
+        <td><a href="/api/safe/ssrf">/api/safe/ssrf</a></td>
+    </tr>
+    <tr>
+        <td>Zip Traversal - Extract File (Safe)</td>
+        <td><a href="/api/safe/unzip">/api/safe/unzip</a></td>
+    </tr>
+    <tr>
+        <td>Open Redirect (Safe)</td>
+        <td><a href="/api/safe/redirect">/api/safe/redirect</a></td>
+    </tr>
+    <tr>
+        <td>Cross-Origin Resource Sharing (CORS) - Safe</td>
+        <td><a href="/api/safe/cors">/api/safe/cors</a></td>
+    </tr>
+    <tr>
+        <td>Tags API (JWT Authentication Required)</td>
+        <td><a href="/api/v1/tags">/api/v1/tags</a></td>
+    </tr>
+    <tr>
+        <td>Articles API (JWT Authentication Required)</td>
+        <td><a href="/api/v1/articles">/api/v1/articles</a></td>
+    </tr>
+    </tbody>
+    </table>
+    </body>
+</html>

@@ -22,29 +22,34 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.LoadHTMLGlob("templates/*")
+	r.Static("/static", "static")
+	r.Any("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	},
+	)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("swagger.json")))
 
 	r.StaticFS("/export", http.Dir(export.GetExcelFullPath()))
 	r.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 	r.StaticFS("/qrcode", http.Dir(qrcode.GetQrCodeFullPath()))
 
 	r.POST("/auth", api.GetAuth)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, ginSwagger.URL("swagger.json")))
 	r.POST("/upload", api.UploadImage)
 
 	// 未授权的漏洞
 	apivul := r.Group("/api/vul")
 	{
-		apivul.POST("/sql/login", unAuth.Sqlli)
+		apivul.Any("/sql/login", unAuth.Sqlli)
 		apivul.Any("/sqli/byid", unAuth.SqlliById)
-		apivul.POST("cmd1", unAuth.CMD1)
-		apivul.POST("cmd2", unAuth.CMD2)
-		apivul.POST("ssrf", unAuth.GetImage)
-		apivul.GET("read", unAuth.FileRead)
-		apivul.GET("dir", unAuth.Dirfile)
-		apivul.GET("unzip", unAuth.Unzip)
-		apivul.GET("redirect", unAuth.Redirect)
-		apivul.GET("cors1", unAuth.Cors1)
-		apivul.GET("cors2", unAuth.Cors2)
+		apivul.Any("cmd1", unAuth.CMD1)
+		apivul.Any("cmd2", unAuth.CMD2)
+		apivul.Any("ssrf", unAuth.GetImage)
+		apivul.Any("read", unAuth.FileRead)
+		apivul.Any("dir", unAuth.DirFile)
+		apivul.Any("unzip", unAuth.Unzip)
+		apivul.Any("redirect", unAuth.Redirect)
+		apivul.Any("cors1", unAuth.Cors1)
+		apivul.Any("cors2", unAuth.Cors2)
 		apivul.Any("xss", unAuth.Xss)
 		apivul.Any("addcomments", unAuth.AddComment)
 		apivul.Any("getcomments", unAuth.GetComments)
@@ -53,11 +58,11 @@ func InitRouter() *gin.Engine {
 	// 安全修复后
 	apisafe := r.Group("/api/safe")
 	{
-		apisafe.POST("/sql/login", unAuth.SqlliSafe)
-		apisafe.POST("ssrf", unAuth.GetImageSafe)
-		apisafe.GET("unzip", unAuth.Unzipsafe)
-		apisafe.GET("redirect", unAuth.SafeRedirect)
-		apisafe.GET("cors", unAuth.Corssafe)
+		apisafe.Any("/sql/login", unAuth.SqlliSafe)
+		apisafe.Any("ssrf", unAuth.GetImageSafe)
+		apisafe.Any("unzip", unAuth.Unzipsafe)
+		apisafe.Any("redirect", unAuth.SafeRedirect)
+		apisafe.Any("cors", unAuth.Corssafe)
 	}
 
 	apiv1 := r.Group("/api/v1")
